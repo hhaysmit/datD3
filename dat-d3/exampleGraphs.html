@@ -28,6 +28,7 @@
 	<p id="p1">
 		<dev id="chart1"></dev>
 		<dev id="chart2"></dev>
+		<dev id="chart3"></dev>
 	</p>
 
 
@@ -53,12 +54,18 @@
 }
 	var data = [{x: 3, y: 5, type:"Female"}, {x:2, y:6, type:"Female"}, {x:1, y:10, type:"Male"}, {x:2, y:8, type:"Male"}, {x:3, y:9, type:"Male"}, {x:1, y:5, type:"Female"},{x:0, y:6, type:"Male"}, {x:0, y:3, type:"Female"}, {x: 4, y: 5, type:"Female"}, {x:4, y:9, type:"Male"}, {x:5, y:2, type:"Female"}, {x:5, y:8, type:"Male"}, {x:6, y:2, type:"Female"}, {x:6, y:5, type:"Male"}]
 
+	var dataset = [{x:3, y:5}, {x:2, y:6}, {x:1, y:10}, {x:0, y:6}, {x:4, y:5}, {x:5, y:8}, {x:6, y:2}]
+
+
 	var stackedChart = _datD3.stackedHistogram().width(400).height(300)
 			_datD3("#chart1", data, stackedChart)
 			
 
 	var groupedChart = _datD3.groupedHistogram().width(400).height(300)
 			_datD3("#chart2", data, groupedChart)
+
+	var barGraph = _datD3.barGraph()
+			_datD3("#chart3", dataset, barGraph)
 
 
 		

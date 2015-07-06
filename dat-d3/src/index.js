@@ -1,6 +1,7 @@
 var d3 = require('d3')
 var histo = require('./stackedHistogram.js')
 var grouped = require('./groupedHistogram.js')
+var bar = require('./barGraph.js')
 
 function datD3(element, data, type){
 		var chart = d3.select(element)
@@ -16,6 +17,7 @@ function datD3(element, data, type){
 	}
 datD3.groupedHistogram = grouped
 datD3.stackedHistogram= histo
+datD3.barGraph = bar
 
 window._datD3 = datD3;
 module.exports = datD3;

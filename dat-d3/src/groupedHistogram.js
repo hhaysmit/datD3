@@ -94,7 +94,7 @@ function groupedHistogram(options){
           return height - margin.top - margin.bottom- yScale(d.y)})
         .attr("width", xScale.rangeBand()/size)
         .attr("fill", function(d){
-              return settings.colors.color[dict[d.type]-1]
+              return settings.colors.color[(dict[d.type]-1)]
           })
         
     

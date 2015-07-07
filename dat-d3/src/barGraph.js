@@ -19,6 +19,11 @@ var DEFAULTS = {
     height: 60,
     width: 50
   },
+  title: {
+    graphTitle: "",
+    size: "20px",
+    color: "#222",
+  }
 }
 function barGraph(options){
   var settings;
@@ -59,6 +64,7 @@ function barGraph(options){
       group.append("g").attr("class", "x axis")
       group.append("g").attr("class", "y axis")
       group.append("g").attr("class", "rects")
+      group.append("g").attr("class", "title")
   
    
     svg.attr("width", width).attr("height", height);
@@ -117,6 +123,21 @@ function barGraph(options){
       .attr("font-family", "sans-serif")
       .attr("color", "#222")
 
+    var title = g.select(".title")
+      title.selectAll("text")
+        .data([settings.title.graphTitle])
+        .enter()
+        .append("text")
+        .text(settings.title.graphTitle)
+        .attr("x", (width)/2)
+        .attr("y", margin.top)
+        .attr("font-size", settings.title.size)
+        .attr("fill", settings.title.color)
+        .attr("text-anchor", "middle")
+        
+        
+ 
+
 
     
   xAxis = d3.svg.axis()
@@ -161,14 +182,12 @@ function barGraph(options){
 function merge(defaults, options){
   if(!options.margin)
     options.margin = defaults.margin
-  if(!options.dimensions){
+  if(!options.dimensions)
     options.dimensions = defaults.dimensions
-    width = options.dimensions.width
-    height = options.dimensions.height
-  }
-    
   if(!options.colors)
     options.colors = defaults.colors
+  if(!options.legend)
+    options.legend = defaults.legend
   return options
   
 }

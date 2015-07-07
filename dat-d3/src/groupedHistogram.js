@@ -17,6 +17,11 @@ var DEFAULTS = {
     height: 60,
     width: 50
   },
+   title: {
+    graphTitle: "",
+    size: "20px",
+    color: "#222",
+  }
 
 }
 
@@ -75,6 +80,7 @@ function groupedHistogram(options){
       group.append("g").attr("class", "y axis")
       group.append("g").attr("class", "rects")
       group.append("g").attr("class", "legend")
+      group.append("g").attr("class", "title")
    
   
     var g = svg.selectAll("g")
@@ -117,6 +123,20 @@ function groupedHistogram(options){
                 return margin.top + i*15 + 10})
          .attr("font-size", "11px")
          .attr("fill", "#222")
+
+    var title = g.select(".title")
+      title.selectAll("text")
+        .data([settings.title.graphTitle])
+        .enter()
+        .append("text")
+        .text(settings.title.graphTitle)
+        .attr("x", (width)/2)
+        .attr("y", margin.top)
+        .attr("font-size", settings.title.size)
+        .attr("fill", settings.title.color)
+        .attr("text-anchor", "middle")
+ 
+
 
   xAxis = d3.svg.axis()
     xAxis.scale(xScale)
@@ -163,6 +183,10 @@ function merge(defaults, options){
     options.dimensions = defaults.dimensions
   if(!options.colors)
     options.colors = defaults.colors
+  if(!options.title)
+    options.title = defaults.title
+  if(!options.legend)
+    options.legend = defaults.legend
   return options
   
 }

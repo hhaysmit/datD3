@@ -67,8 +67,8 @@ function groupedHistogram(options){
       .rangeRoundBands([margin.left, width - margin.left - margin.right], .05);
 
     var yScale = d3.scale.linear()
-              .domain([0, yMax + 5])
-              .range([height - margin.top - margin.bottom, margin.bottom]);
+      .domain([0, yMax + 5])
+      .range([height - margin.top - margin.bottom, margin.bottom]);
 
     var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
               svg.attr("width", width).attr("height", height)
@@ -100,8 +100,7 @@ function groupedHistogram(options){
           return height - margin.top - margin.bottom- yScale(d.y)})
         .attr("width", xScale.rangeBand()/size)
         .attr("fill", function(d){
-              return settings.colors.color[(dict[d.type]-1)]
-          })
+          return settings.colors.color[(dict[d.type]-1)]})
         
     
     var legend = g.select(".legend")
@@ -115,17 +114,17 @@ function groupedHistogram(options){
            return margin.top + i*17})
         .attr("fill", function(d, i){ return settings.colors.color[i]})
     legend.selectAll("text").data(list)
-          .enter()
-          .append("text")
-          .text(function(d){return d})
-          .attr("x", width - margin.right - settings.legend.width)
-          .attr("y", function(d, i){
-                return margin.top + i*15 + 10})
-         .attr("font-size", "11px")
-         .attr("fill", "#222")
+        .enter()
+        .append("text")
+        .text(function(d){return d})
+        .attr("x", width - margin.right - settings.legend.width)
+        .attr("y", function(d, i){
+          return margin.top + i*15 + 10})
+        .attr("font-size", "11px")
+        .attr("fill", "#222")
 
     var title = g.select(".title")
-      title.selectAll("text")
+    title.selectAll("text")
         .data([settings.title.graphTitle])
         .enter()
         .append("text")
@@ -139,21 +138,21 @@ function groupedHistogram(options){
 
 
   xAxis = d3.svg.axis()
-    xAxis.scale(xScale)
-      .orient("bottom")
-      .ticks(5);
+  xAxis.scale(xScale)
+    .orient("bottom")
+    .ticks(5);
   yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .ticks(5);
+    .scale(yScale)
+    .orient("left")
+    .ticks(5);
 
-    g.select(".x.axis")
-      .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
-      .call(xAxis)
-     g.select(".y.axis")
-      .attr("transform", "translate("+ margin.left + ", 0)")
-      .call(yAxis);
-      })
+  g.select(".x.axis")
+    .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
+    .call(xAxis)
+  g.select(".y.axis")
+    .attr("transform", "translate("+ margin.left + ", 0)")
+    .call(yAxis);
+  })
 
 }
   

@@ -9519,7 +9519,7 @@ var DEFAULTS = {
     width: 400
   }, 
   colors:{
-      color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"]
+    color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"]
   },
   legend: {
     height: 60,
@@ -9558,8 +9558,8 @@ function barGraph(options){
     
 
     var yScale = d3.scale.linear()
-              .domain([0, yMax + 5])
-              .range([height- margin.top-margin.bottom, margin.bottom]);
+      .domain([0, yMax + 5])
+      .range([height- margin.top-margin.bottom, margin.bottom]);
 
     var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
       svg.attr("width", width).attr("height", height)
@@ -9567,10 +9567,10 @@ function barGraph(options){
     var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
     
 
-      group.append("g").attr("class", "x axis")
-      group.append("g").attr("class", "y axis")
-      group.append("g").attr("class", "rects")
-      group.append("g").attr("class", "title")
+    group.append("g").attr("class", "x axis")
+    group.append("g").attr("class", "y axis")
+    group.append("g").attr("class", "rects")
+    group.append("g").attr("class", "title")
   
    
     svg.attr("width", width).attr("height", height);
@@ -9592,8 +9592,7 @@ function barGraph(options){
           return height - margin.top - margin.bottom - yScale(d.y)})
         .attr("width", xScale.rangeBand())
         .attr("fill", function(d, i){
-          return settings.colors.color[i%settings.colors.color.length]
-          })
+          return settings.colors.color[i%settings.colors.color.length]})
         .attr("opacity", .25)
 
    graph.append("g").attr("class", "topBars")
@@ -9605,12 +9604,11 @@ function barGraph(options){
         return xScale(d.x)
       })
       .attr("y", function(d){ 
-          return yScale(d.y)})
+        return yScale(d.y)})
       .attr("width", xScale.rangeBand())
       .attr("height", 3)
       .attr("fill", function(d, i){
-          return settings.colors.color[i%settings.colors.color.length ]
-          })
+        return settings.colors.color[i%settings.colors.color.length]})
     graph.append("g").attr("class", "labels")
     graph.select(".labels").selectAll("text")
       .data(data)
@@ -9630,16 +9628,16 @@ function barGraph(options){
       .attr("color", "#222")
 
     var title = g.select(".title")
-      title.selectAll("text")
-        .data([settings.title.graphTitle])
-        .enter()
-        .append("text")
-        .text(settings.title.graphTitle)
-        .attr("x", (width)/2)
-        .attr("y", margin.top)
-        .attr("font-size", settings.title.size)
-        .attr("fill", settings.title.color)
-        .attr("text-anchor", "middle")
+    title.selectAll("text")
+      .data([settings.title.graphTitle])
+      .enter()
+      .append("text")
+      .text(settings.title.graphTitle)
+      .attr("x", (width)/2)
+      .attr("y", margin.top)
+      .attr("font-size", settings.title.size)
+      .attr("fill", settings.title.color)
+      .attr("text-anchor", "middle")
         
         
  
@@ -9647,18 +9645,18 @@ function barGraph(options){
 
     
   xAxis = d3.svg.axis()
-    xAxis.scale(xScale)
+  xAxis.scale(xScale)
       .orient("bottom")
       .ticks(5);
   yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .ticks(5);
+      .scale(yScale)
+      .orient("left")
+      .ticks(5);
 
-     g.select(".x.axis")
+  g.select(".x.axis")
       .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
       .call(xAxis)
-     g.select(".y.axis")
+  g.select(".y.axis")
       .attr("transform", "translate("+ margin.left + ", 0)")
       .call(yAxis);
       })
@@ -9768,8 +9766,8 @@ function groupedHistogram(options){
       .rangeRoundBands([margin.left, width - margin.left - margin.right], .05);
 
     var yScale = d3.scale.linear()
-              .domain([0, yMax + 5])
-              .range([height - margin.top - margin.bottom, margin.bottom]);
+      .domain([0, yMax + 5])
+      .range([height - margin.top - margin.bottom, margin.bottom]);
 
     var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
               svg.attr("width", width).attr("height", height)
@@ -9801,8 +9799,7 @@ function groupedHistogram(options){
           return height - margin.top - margin.bottom- yScale(d.y)})
         .attr("width", xScale.rangeBand()/size)
         .attr("fill", function(d){
-              return settings.colors.color[(dict[d.type]-1)]
-          })
+          return settings.colors.color[(dict[d.type]-1)]})
         
     
     var legend = g.select(".legend")
@@ -9816,17 +9813,17 @@ function groupedHistogram(options){
            return margin.top + i*17})
         .attr("fill", function(d, i){ return settings.colors.color[i]})
     legend.selectAll("text").data(list)
-          .enter()
-          .append("text")
-          .text(function(d){return d})
-          .attr("x", width - margin.right - settings.legend.width)
-          .attr("y", function(d, i){
-                return margin.top + i*15 + 10})
-         .attr("font-size", "11px")
-         .attr("fill", "#222")
+        .enter()
+        .append("text")
+        .text(function(d){return d})
+        .attr("x", width - margin.right - settings.legend.width)
+        .attr("y", function(d, i){
+          return margin.top + i*15 + 10})
+        .attr("font-size", "11px")
+        .attr("fill", "#222")
 
     var title = g.select(".title")
-      title.selectAll("text")
+    title.selectAll("text")
         .data([settings.title.graphTitle])
         .enter()
         .append("text")
@@ -9840,21 +9837,21 @@ function groupedHistogram(options){
 
 
   xAxis = d3.svg.axis()
-    xAxis.scale(xScale)
-      .orient("bottom")
-      .ticks(5);
+  xAxis.scale(xScale)
+    .orient("bottom")
+    .ticks(5);
   yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .ticks(5);
+    .scale(yScale)
+    .orient("left")
+    .ticks(5);
 
-    g.select(".x.axis")
-      .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
-      .call(xAxis)
-     g.select(".y.axis")
-      .attr("transform", "translate("+ margin.left + ", 0)")
-      .call(yAxis);
-      })
+  g.select(".x.axis")
+    .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
+    .call(xAxis)
+  g.select(".y.axis")
+    .attr("transform", "translate("+ margin.left + ", 0)")
+    .call(yAxis);
+  })
 
 }
   
@@ -9979,20 +9976,20 @@ function stackedHistogram(options){
     
 
     var yScale = d3.scale.linear()
-              .domain([0, yMax + 5])
-              .range([height- margin.top-margin.bottom, margin.bottom]);
+      .domain([0, yMax + 5])
+      .range([height- margin.top-margin.bottom, margin.bottom]);
 
     var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
-      svg.attr("width", width).attr("height", height)
+    svg.attr("width", width).attr("height", height)
 
     var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
     
 
-      group.append("g").attr("class", "x axis")
-      group.append("g").attr("class", "y axis")
-      group.append("g").attr("class", "rects")
-      group.append("g").attr("class", "legend")
-      group.append("g").attr("class", "title")
+    group.append("g").attr("class", "x axis")
+    group.append("g").attr("class", "y axis")
+    group.append("g").attr("class", "rects")
+    group.append("g").attr("class", "legend")
+    group.append("g").attr("class", "title")
    
     svg.attr("width", width).attr("height", height);
 
@@ -10028,20 +10025,22 @@ function stackedHistogram(options){
         .attr("x", width - margin.right - settings.legend.width-20)
         .attr("y", function(d, i){
            return margin.top + i*17})
-        .attr("fill", function(d, i){ return settings.colors.color[i]})
+        .attr("fill", function(d, i){ 
+          return settings.colors.color[i]})
     legend.selectAll("text").data(list)
-          .enter()
-          .append("text")
-          .text(function(d){return d})
-          .attr("x", width - margin.right - settings.legend.width)
-          .attr("y", function(d, i){
-                return margin.top + i*15 + 10})
-         .attr("font-size", "11px")
-         .attr("fill", "#222")
+        .enter()
+        .append("text")
+        .text(function(d){
+          return d})
+        .attr("x", width - margin.right - settings.legend.width)
+        .attr("y", function(d, i){
+          return margin.top + i*15 + 10})
+        .attr("font-size", "11px")
+        .attr("fill", "#222")
 
 
     var title = g.select(".title")
-      title.selectAll("text")
+    title.selectAll("text")
         .data([settings.title.graphTitle])
         .enter()
         .append("text")
@@ -10056,18 +10055,18 @@ function stackedHistogram(options){
 
     
   xAxis = d3.svg.axis()
-    xAxis.scale(xScale)
+  xAxis.scale(xScale)
       .orient("bottom")
       .ticks(5);
   yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .ticks(5);
+      .scale(yScale)
+      .orient("left")
+      .ticks(5);
 
-     g.select(".x.axis")
+  g.select(".x.axis")
       .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
       .call(xAxis)
-     g.select(".y.axis")
+  g.select(".y.axis")
       .attr("transform", "translate("+ margin.left + ", 0)")
       .call(yAxis);
       })

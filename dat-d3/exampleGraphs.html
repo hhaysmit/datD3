@@ -46,7 +46,7 @@
 	}, 
   title: {
   	graphTitle: "Stacked Histogram",
-  	size: "25px",
+  	size: "20px",
   	color: "#222"
   }
 }
@@ -63,7 +63,7 @@ var options2= {
 	}, 
   title: {
   	graphTitle: "Grouped Histogram",
-  	size: "25px",
+  	size: "20px",
   	color: "#222"
   }
 }
@@ -80,7 +80,7 @@ var options3= {
 	},
   title: {
   	graphTitle: "Bar Graph",
-  	size: "25px",
+  	size: "20px",
   	color: "#222"
   }
 }
@@ -88,16 +88,40 @@ var options3= {
 
 	var dataset = [{x:3, y:5}, {x:2, y:6}, {x:1, y:10}, {x:0, y:6}, {x:4, y:5}, {x:5, y:8}, {x:6, y:2}]
 
+	//var data = [[{x: 0, y:8}, {x:1, y: 10}, {x:2, y: 4}, {x:3, y: 9}], [{x: 0, y:5}, {x:1, y: 9}, {x:2, y: 15}, {x:3, y: 9}], [{x: 0, y:11}, {x:1, y: 4}, {x:2, y: 8}, {x:3, y: 12}]]
+
+	
+
+
+	var xGetter = function(data){
+		return data.x;
+	}
+	var yGetter = function(data){
+		return data.y;
+	}
+
+	var typeGetter = function(data){
+		return data.type;
+	}
 
 	var stackedChart = _datD3.stackedHistogram(options)
-			_datD3("#chart1", data, stackedChart)
+		stackedChart = stackedChart.x(xGetter)
+		stackedChart = stackedChart.y(yGetter)
+		stackedChart = stackedChart.type(typeGetter)
+		_datD3("#chart1", data, stackedChart)
 			
 
 	var groupedChart = _datD3.groupedHistogram(options2)
+		groupedChart = groupedChart.x(xGetter)
+		groupedChart = groupedChart.y(yGetter)
+		groupedChart = groupedChart.type(typeGetter)
 		_datD3("#chart2", data, groupedChart)
 
+
 	var barGraph = _datD3.barGraph(options3)
-			_datD3("#chart3", dataset, barGraph)
+		barGraph = barGraph.x(xGetter)
+		barGraph = barGraph.y(yGetter)
+		_datD3("#chart3", dataset, barGraph)
 
 
 		

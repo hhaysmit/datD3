@@ -9504,392 +9504,597 @@
   this.d3 = d3;
 }();
 },{}],2:[function(require,module,exports){
-var d3 = require('d3')
+/*!
+ * @name JavaScript/NodeJS Merge v1.2.0
+ * @author yeikos
+ * @repository https://github.com/yeikos/js.merge
 
+ * Copyright 2014 yeikos - MIT license
+ * https://raw.github.com/yeikos/js.merge/master/LICENSE
+ */
 
-var DEFAULTS = {
-  margin: {
-    top: 10, 
-    right:10, 
-    bottom:25, 
-    left: 25,
-  }, 
-  dimensions:{
-    height: 300,
-    width: 400
-  }, 
-  colors:{
-    color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"]
-  },
-  legend: {
-    height: 60,
-    width: 50
-  },
-  title: {
-    graphTitle: "",
-    size: "20px",
-    color: "#222",
-  }
-}
-function barGraph(options){
-  var settings;
-  
-  if(arguments.length == 1)
-    settings= merge(DEFAULTS, options)
-  else 
-    settings = DEFAULTS
+;(function(isNode) {
 
-  var height = settings.dimensions.height;
-  var width = settings.dimensions.width;
- 
-  var margin = settings.margin
+	/**
+	 * Merge one or more objects 
+	 * @param bool? clone
+	 * @param mixed,... arguments
+	 * @return object
+	 */
 
-  var chart = function chart(selection){
-    selection.each(function(data){
-    var yMax = 0;
-    for(var i = 0; i < data.length; i++){
-      if(data[i].y > yMax)
-        yMax = data[i].y
-    }
+	var Public = function(clone) {
 
-    var xScale = d3.scale.ordinal()
-      .domain(d3.range(data.length))
-      .rangeRoundBands([margin.left, width - margin.left-margin.right], .05);
-    
+		return merge(clone === true, false, arguments);
 
-    var yScale = d3.scale.linear()
-      .domain([0, yMax + 5])
-      .range([height- margin.top-margin.bottom, margin.bottom]);
+	}, publicName = 'merge';
 
-    var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
-      svg.attr("width", width).attr("height", height)
+	/**
+	 * Merge two or more objects recursively 
+	 * @param bool? clone
+	 * @param mixed,... arguments
+	 * @return object
+	 */
 
-    var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
-    
+	Public.recursive = function(clone) {
 
-    group.append("g").attr("class", "x axis")
-    group.append("g").attr("class", "y axis")
-    group.append("g").attr("class", "rects")
-    group.append("g").attr("class", "title")
-  
-   
-    svg.attr("width", width).attr("height", height);
+		return merge(clone === true, true, arguments);
 
-    var g = svg.selectAll("g")
+	};
 
-   
-    var graph = g.select(".rects")
-    graph.append("g").attr("class", "bars")
-    graph.select(".bars").selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("x", function(d){ 
-          return xScale(d.x)})
-        .attr("y", function(d){ 
-          return yScale(d.y)})
-        .attr("height", function(d){ 
-          return height - margin.top - margin.bottom - yScale(d.y)})
-        .attr("width", xScale.rangeBand())
-        .attr("fill", function(d, i){
-          return settings.colors.color[i%settings.colors.color.length]})
-        .attr("opacity", .25)
+	/**
+	 * Clone the input removing any reference
+	 * @param mixed input
+	 * @return mixed
+	 */
 
-   graph.append("g").attr("class", "topBars")
-   graph.select(".topBars").selectAll("rect")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", function(d){
-        return xScale(d.x)
-      })
-      .attr("y", function(d){ 
-        return yScale(d.y)})
-      .attr("width", xScale.rangeBand())
-      .attr("height", 3)
-      .attr("fill", function(d, i){
-        return settings.colors.color[i%settings.colors.color.length]})
-    graph.append("g").attr("class", "labels")
-    graph.select(".labels").selectAll("text")
-      .data(data)
-      .enter()
-      .append("text")
-      .text(function(d){
-        return d.y;
-      })
-      .attr("x", function(d){
-        return xScale(d.x) + xScale.rangeBand()/2;
-      })
-      .attr("y", function(d){ 
-        return yScale(d.y)-2})
-      .attr("text-anchor", "middle")
-      .attr("font-size", "12px")
-      .attr("font-family", "sans-serif")
-      .attr("color", "#222")
+	Public.clone = function(input) {
 
-    var title = g.select(".title")
-    title.selectAll("text")
-      .data([settings.title.graphTitle])
-      .enter()
-      .append("text")
-      .text(settings.title.graphTitle)
-      .attr("x", (width)/2)
-      .attr("y", margin.top)
-      .attr("font-size", settings.title.size)
-      .attr("fill", settings.title.color)
-      .attr("text-anchor", "middle")
-        
-        
- 
+		var output = input,
+			type = typeOf(input),
+			index, size;
 
+		if (type === 'array') {
 
-    
-  xAxis = d3.svg.axis()
-  xAxis.scale(xScale)
-      .orient("bottom")
-      .ticks(5);
-  yAxis = d3.svg.axis()
-      .scale(yScale)
-      .orient("left")
-      .ticks(5);
+			output = [];
+			size = input.length;
 
-  g.select(".x.axis")
-      .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
-      .call(xAxis)
-  g.select(".y.axis")
-      .attr("transform", "translate("+ margin.left + ", 0)")
-      .call(yAxis);
-      })
+			for (index=0;index<size;++index)
 
-}
-  
-  
-  chart.width = function(value){
-    if(!arguments.length) return width;
-    width = value;
-    return chart
-  }
+				output[index] = Public.clone(input[index]);
 
-  chart.height = function(value){
-    if(!arguments.length) return height
-      height = value;
-      return chart;
-  }
+		} else if (type === 'object') {
 
-  chart.margin = function(value){
-    if(!arguments.length) return margin
-    margin = value
-  }
-  return chart;
-}
+			output = {};
 
-function merge(defaults, options){
-  if(!options.margin)
-    options.margin = defaults.margin
-  if(!options.dimensions)
-    options.dimensions = defaults.dimensions
-  if(!options.colors)
-    options.colors = defaults.colors
-  if(!options.legend)
-    options.legend = defaults.legend
-  return options
-  
-}
+			for (index in input)
+
+				output[index] = Public.clone(input[index]);
+
+		}
+
+		return output;
+
+	};
+
+	/**
+	 * Merge two objects recursively
+	 * @param mixed input
+	 * @param mixed extend
+	 * @return mixed
+	 */
+
+	function merge_recursive(base, extend) {
+
+		if (typeOf(base) !== 'object')
+
+			return extend;
+
+		for (var key in extend) {
+
+			if (typeOf(base[key]) === 'object' && typeOf(extend[key]) === 'object') {
+
+				base[key] = merge_recursive(base[key], extend[key]);
+
+			} else {
+
+				base[key] = extend[key];
+
+			}
+
+		}
+
+		return base;
+
+	}
+
+	/**
+	 * Merge two or more objects
+	 * @param bool clone
+	 * @param bool recursive
+	 * @param array argv
+	 * @return object
+	 */
+
+	function merge(clone, recursive, argv) {
+
+		var result = argv[0],
+			size = argv.length;
+
+		if (clone || typeOf(result) !== 'object')
+
+			result = {};
+
+		for (var index=0;index<size;++index) {
+
+			var item = argv[index],
+
+				type = typeOf(item);
+
+			if (type !== 'object') continue;
+
+			for (var key in item) {
+
+				var sitem = clone ? Public.clone(item[key]) : item[key];
+
+				if (recursive) {
+
+					result[key] = merge_recursive(result[key], sitem);
+
+				} else {
+
+					result[key] = sitem;
+
+				}
+
+			}
+
+		}
+
+		return result;
+
+	}
+
+	/**
+	 * Get type of variable
+	 * @param mixed input
+	 * @return string
+	 *
+	 * @see http://jsperf.com/typeofvar
+	 */
+
+	function typeOf(input) {
+
+		return ({}).toString.call(input).slice(8, -1).toLowerCase();
+
+	}
+
+	if (isNode) {
+
+		module.exports = Public;
+
+	} else {
+
+		window[publicName] = Public;
+
+	}
+
+})(typeof module === 'object' && module && typeof module.exports === 'object' && module.exports);
+},{}],3:[function(require,module,exports){
+var d3 = require('d3'),
+    merge = require("merge");
+
 module.exports = barGraph;
-},{"d3":1}],3:[function(require,module,exports){
-var d3 = require('d3')
 
-var DEFAULTS = {
-  margin: {
-    top: 10, 
-    right:10, 
-    bottom:25, 
-    left: 25,
-  }, 
-  dimensions:{
-    height: 300,
-    width: 400
-  }, 
-  colors:{
-    color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
-  },legend: {
-    height: 60,
-    width: 50
-  },
-   title: {
-    graphTitle: "",
-    size: "20px",
-    color: "#222",
-  }
-
-}
-
-
-
-function groupedHistogram(options){
-  var settings;
-  if(arguments.length == 1)
-  settings= merge(DEFAULTS, options)
-  else settings = DEFAULTS
-  
-  var width = settings.dimensions.width
-  var height = settings.dimensions.height  
-  
-  var margin = settings.margin
-
-  
-  var chart = function chart(selection){
-    selection.each(function(data){  
-    var currMax = 0
-    var yMax = 0;
-   
-    var dict = {}
-    var size = 0
-    var list = []
-    for(var i = 0; i < data.length; i++){
-      if(!dict[data[i].type]){ 
-        size++
-        dict[data[i].type] = size
-        list.push(data[i].type)
-      }    
-      if(data[i].y > yMax)
-        yMax = data[i].y
-    }
-
-
-    data.sort(function(a, b){
-      return b.y - a.y;
-    })
+function barGraph(options) {
+    var DEFAULTS = {
+        margin: {
+            top: 10,
+            right: 10,
+            bottom: 25,
+            left: 25,
+        },
+        height: 300,
+        width: 400,
+        color: ["#AE2B3D", "#115ABC", "#4208A1", "#00A24F", "#00A24F", "#F7C019", "#ED8C18"],
+        legend: {
+          height: 60,
+          width: 50,
+        },
+        title: {
+          graphTitle: "",
+          size: "20px",
+          color: "#222",
+        }
+    };
     
-    var xScale = d3.scale.ordinal()
-      .domain(d3.range(data.length/size))
-      .rangeRoundBands([margin.left, width - margin.left - margin.right], .05);
+    options = merge.recursive(true, {}, DEFAULTS, options || {});
 
-    var yScale = d3.scale.linear()
-      .domain([0, yMax + 5])
-      .range([height - margin.top - margin.bottom, margin.bottom]);
+    var height = options.height,
+        width  = options.width,
+        margin = options.margin,
+        x = options.xValue,
+        y = options.yValue,
+        type = options.typeValue;
 
-    var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
-              svg.attr("width", width).attr("height", height)
+    function chart(selection) {
 
-    var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
-   
+        selection.each(function(data) {
+            var yMax = 0;
 
-      group.append("g").attr("class", "x axis")
-      group.append("g").attr("class", "y axis")
-      group.append("g").attr("class", "rects")
-      group.append("g").attr("class", "legend")
-      group.append("g").attr("class", "title")
-   
-  
-    var g = svg.selectAll("g")
-    
-    var rects = g.select(".rects")
-      rects.append("g").attr("class", "bars")
-        rects.select(".bars").selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("class", "bars")
-        .attr("x", function(d){
-          return xScale(d.x) + (dict[d.type]-1)*(xScale.rangeBand()/size)})
-        .attr("y", function(d){ 
-          return yScale(d.y)})
-        .attr("height", function(d){ 
-          return height - margin.top - margin.bottom- yScale(d.y)})
-        .attr("width", xScale.rangeBand()/size)
-        .attr("fill", function(d){
-          return settings.colors.color[(dict[d.type]-1)]})
+            for (var i = 0; i < data.length; i++) {
+                if (chart.y()(data[i]) > yMax) {
+                    yMax = chart.y()(data[i]);
+                }
+            }
+
+            var xScale = d3.scale.ordinal()
+                .domain(d3.range(data.length))
+                .rangeRoundBands([margin.left, width - margin.left - margin.right], 0.05);
+
+            var yScale = d3.scale.linear()
+                .domain([0, yMax + 5])
+                .range([height - margin.top - margin.bottom, margin.bottom]);
+
+            var svg = d3.select(this)
+                .selectAll("svg")
+                .data([data])
+                .enter()
+                .append("svg");
+
+            svg.attr("width", width)
+                .attr("height", height);
+
+            var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")");
+            group.append("g").attr("class", "x axis");
+            group.append("g").attr("class", "y axis");
+            group.append("g").attr("class", "rects");
+            group.append("g").attr("class", "title");
+
+          
+           
+            svg.attr("width", width)
+                .attr("height", height);
+
+            var g = svg.selectAll("g");
+           
+            var graph = g.select(".rects");
+            graph.append("g").attr("class", "bars");
+            graph.select(".bars").selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr({
+                    x: function(d){ return xScale(chart.x()(d)); },
+                    y: function(d){ return yScale(chart.y()(d)); },
+                    height: function(d) {
+                        return height - margin.top - margin.bottom - yScale(chart.y()(d));
+                    },
+                    width: xScale.rangeBand,
+                    fill: function(d, i){
+                        return options.color[i%options.color.length];
+                    },
+                    opacity: 0.25,
+                });
+
+            graph.append("g").attr("class", "topBars");
+            graph.select(".topBars").selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr({
+                    x: function(d) { return xScale(chart.x()(d)); },
+                    y: function(d) { return yScale(chart.y()(d)); },
+                    width: xScale.rangeBand,
+                    height: 3,
+                    fill: function(d, i) {
+                        return options.color[i%options.color.length];
+                    }
+                });
+
+            graph.append("g").attr("class", "labels");
+            graph.select(".labels").selectAll("text")
+                .data(data)
+                .enter()
+                .append("text")
+                .text(function(d){
+                  return chart.y()(d);
+                })
+                .attr({
+                    x: function(d) {
+                        return xScale(chart.x()(d)) + xScale.rangeBand() / 2;
+                    },
+                    y: function(d) {
+                        return yScale(chart.y()(d)) - 2;
+                    },
+                    "text-anchor": "middle",
+                    "font-size": "12px",
+                    "font-family": "Helvetica, sans-serif",
+                    "color": "#222",
+                });
+
+            var title = g.select(".title")
+            title.selectAll("text")
+                .data([options.title.graphTitle])
+                .enter()
+                .append("text")
+                .text(options.title.graphTitle)
+                .attr({
+                    x: width/2,
+                    y: margin.top,
+                    "font-size": options.title.size,
+                    "fill": options.title.color,
+                    "text-anchor": "middle",
+                  });
         
+
+            xAxis = d3.svg.axis();
+            xAxis.scale(xScale)
+                .orient("bottom")
+                .ticks(5);
+            yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("left")
+                .ticks(5);
+
+            g.select(".x.axis")
+                .attr("transform", "translate(" +[0, height - margin.top - margin.bottom] + ")")
+                .call(xAxis);
+
+            g.select(".y.axis")
+                .attr("transform", "translate("+ margin.left + ", 0)")
+                .call(yAxis);
+
+        });
+    }
     
-    var legend = g.select(".legend")
-    legend.selectAll("rect").data(list)
-        .enter()
-        .append("rect")
-        .attr("width", 15)
-        .attr("height", 15)
-        .attr("x", width - margin.right - settings.legend.width-20)
-        .attr("y", function(d, i){
-           return margin.top + i*17})
-        .attr("fill", function(d, i){ return settings.colors.color[i]})
-    legend.selectAll("text").data(list)
-        .enter()
-        .append("text")
-        .text(function(d){return d})
-        .attr("x", width - margin.right - settings.legend.width)
-        .attr("y", function(d, i){
-          return margin.top + i*15 + 10})
-        .attr("font-size", "11px")
-        .attr("fill", "#222")
+    chart.width = function(value){
+        if (!arguments.length) return width;
+        width = value;
+        return chart;
+    };
 
-    var title = g.select(".title")
-    title.selectAll("text")
-        .data([settings.title.graphTitle])
-        .enter()
-        .append("text")
-        .text(settings.title.graphTitle)
-        .attr("x", (width)/2)
-        .attr("y", margin.top)
-        .attr("font-size", settings.title.size)
-        .attr("fill", settings.title.color)
-        .attr("text-anchor", "middle")
- 
+    chart.height = function(value){
+        if (!arguments.length) return height;
+        height = value;
+        return chart;
+    };
 
+    chart.margin = function(value){
+        if(!arguments.length) return margin;
+        margin = value;
+        return chart;
+    };
 
-  xAxis = d3.svg.axis()
-  xAxis.scale(xScale)
-    .orient("bottom")
-    .ticks(5);
-  yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient("left")
-    .ticks(5);
+    chart.x = function(getter) {
+        if(!arguments.length) return x;
+        x = getter;
+        return chart;
+    };
 
-  g.select(".x.axis")
-    .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
-    .call(xAxis)
-  g.select(".y.axis")
-    .attr("transform", "translate("+ margin.left + ", 0)")
-    .call(yAxis);
-  })
+    chart.y = function(getter) {
+        if(!arguments.length) return y;
+        y = getter;
+        return chart;
+    };
 
-}
-  
-  chart.width = function(value){
-    if(!arguments.length) return width;
-    width = value;
-    return chart 
-  }
-
-  chart.height = function(value){
-    if(!arguments.length) return height
-      height = value;
-      return chart;
-  }
-
-  chart.margin = function(value){
-    if(!arguments.length) return margin
-    margin = value
-  }
-  return chart;
+    return chart;
 }
 
-function merge(defaults, options){
-  if(!options.margin)
-    options.margin = defaults.margin
-  if(!options.dimensions)
-    options.dimensions = defaults.dimensions
-  if(!options.colors)
-    options.colors = defaults.colors
-  if(!options.title)
-    options.title = defaults.title
-  if(!options.legend)
-    options.legend = defaults.legend
-  return options
-  
-}
+
+},{"d3":1,"merge":2}],4:[function(require,module,exports){
+var d3 = require('d3'),
+    merge = require("merge");
+
 module.exports = groupedHistogram;
-},{"d3":1}],4:[function(require,module,exports){
+
+function groupedHistogram(options) {
+    var DEFAULTS = {
+        margin: {
+            top: 10,
+            right: 10,
+            bottom: 25,
+            left: 25,
+        },
+        height: 300,
+        width: 400,
+        color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"],
+        legend: {
+            height: 60,
+            width: 50,
+        },
+        title: {
+            graphTitle: "",
+            size: "20px",
+            color: "#222",
+        }
+    };
+
+    options = merge.recursive(true, {}, DEFAULTS, options || {});
+
+    var width = options.width,
+        height = options.height,
+        margin = options.margin,
+        x = options.xValue,
+        y = options.yValue,
+        type = options.typeValue;
+
+    function chart(selection) {
+        selection.each(function(data) {
+            var currMax = 0;
+            var yMax = 0;
+           
+            var dict = {};
+            var size = 0;
+            var list = [];
+
+            for (var i = 0; i < data.length; i++) {
+                if (!dict[chart.type()(data[i])]) {
+                    size++;
+                    dict[chart.type()(data[i])] = size;
+                    list.push(chart.type()(data[i]));
+                }
+                if (chart.y()(data[i]) > yMax) {
+                    yMax = chart.y()(data[i]);
+                }
+            }
+
+            data.sort(function(a, b) {
+                return chart.y()(b) - chart.y()(a);
+            });
+            
+            var xScale = d3.scale.ordinal()
+                .domain(d3.range(data.length/size))
+                .rangeRoundBands([margin.left, width - margin.left - margin.right], 0.05);
+
+            var yScale = d3.scale.linear()
+                      .domain([0, yMax + 5])
+                      .range([height - margin.top - margin.bottom, margin.bottom]);
+
+            var svg = d3.select(this)
+                .selectAll("svg")
+                .data([data])
+                .enter()
+                .append("svg");
+
+            svg
+                .attr("width", width)
+                .attr("height", height);
+
+            var group = svg.append("g")
+                .attr("transform", "translate(" + [margin.left, margin.top] + ")");
+           
+            group.append("g").attr("class", "x axis");
+            group.append("g").attr("class", "y axis");
+            group.append("g").attr("class", "rects");
+            group.append("g").attr("class", "legend");
+            group.append("g").attr("class", "title");
+           
+            var g = svg.selectAll("g");
+            var rects = g.select(".rects");
+            rects
+                .append("g")
+                .attr("class", "bars");
+            rects
+                .select(".bars")
+                .selectAll("rect")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bars")
+                .attr("x", function(d){
+                    return xScale(chart.x()(d)) + (dict[chart.type()(d)]-1)*(xScale.rangeBand()/size);
+                })
+                .attr("y", function(d){
+                    return yScale(chart.y()(d));
+                })
+                .attr("height", function(d){
+                    return height - margin.top - margin.bottom- yScale(chart.y()(d));
+                })
+                .attr("width", xScale.rangeBand() / size)
+                .attr("fill", function(d){
+                      return options.color[(dict[chart.type()(d)]-1)];
+                });
+                
+            
+            var legend = g.select(".legend");
+            legend.selectAll("rect")
+                .data(list)
+                .enter()
+                .append("rect")
+                .attr("width", 15)
+                .attr("height", 15)
+                .attr("x", width - margin.right - options.legend.width - 20)
+                .attr("y", function(d, i) {
+                    return margin.top + i * 17;
+                })
+                .attr("fill", function(d, i) {
+                    return options.color[i];
+                });
+            legend.selectAll("text")
+                .data(list)
+                .enter()
+                .append("text")
+                .text(function(d){ return d; })
+                .attr("x", width - margin.right - options.legend.width)
+                .attr("y", function(d, i) {
+                    return margin.top + i*15 + 10;
+                })
+               .attr("font-size", "11px")
+               .attr("fill", "#222");
+
+            var title = g.select(".title")
+            title.selectAll("text")
+                .data([options.title.graphTitle])
+                .enter()
+                .append("text")
+                .text(options.title.graphTitle)
+                .attr({
+                    x: width/2,
+                    y: margin.top,
+                    "font-size": options.title.size,
+                    "fill": options.title.color,
+                    "text-anchor": "middle",
+                    });
+
+            xAxis = d3.svg.axis();
+            xAxis.scale(xScale)
+                .orient("bottom")
+                .ticks(5);
+
+            yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient("left")
+                .ticks(5);
+
+            g.select(".x.axis")
+                .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
+                .call(xAxis);
+            g.select(".y.axis")
+                .attr("transform", "translate("+ margin.left + ", 0)")
+                .call(yAxis);
+        });
+    }
+    
+    chart.width = function(value) {
+        if (!arguments.length) return width;
+        width = value;
+        return chart;
+    };
+
+    chart.height = function(value) {
+        if (!arguments.length) return height;
+        height = value;
+        return chart;
+    };
+
+    chart.margin = function(value) {
+        if (!arguments.length) return margin;
+        margin = value;
+        return chart;
+    };
+
+    chart.x = function(getter) {
+      if(!arguments.length) return x;
+      x = getter;
+      return chart;
+    };
+
+    chart.y = function(getter) {
+      if(!arguments.length) return y;
+      y = getter;
+      return chart;
+    };
+
+    chart.type = function(getter) {
+      if(!arguments.length) return type;
+      type = getter;
+      return chart;
+    };
+
+    return chart;
+};
+
+},{"d3":1,"merge":2}],5:[function(require,module,exports){
 var d3 = require('d3')
 var histo = require('./stackedHistogram.js')
 var grouped = require('./groupedHistogram.js')
@@ -9914,199 +10119,212 @@ datD3.barGraph = bar
 window._datD3 = datD3;
 module.exports = datD3;
 
-},{"./barGraph.js":2,"./groupedHistogram.js":3,"./stackedHistogram.js":5,"d3":1}],5:[function(require,module,exports){
-var d3 = require('d3')
+},{"./barGraph.js":3,"./groupedHistogram.js":4,"./stackedHistogram.js":6,"d3":1}],6:[function(require,module,exports){
+var d3 = require('d3'),
+    merge = require('merge')
+
+module.exports = stackedHistogram;
 
 
-var DEFAULTS = {
-  margin: {
-    top: 10, 
-    right:10, 
-    bottom:25, 
-    left: 25,
-  }, 
-  dimensions:{
-    height: 300,
-    width: 400
-  }, 
-  colors:{
-    color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"]
-  },
-  legend: {
-    height: 60,
-    width: 50
-  },
-  title: {
-    graphTitle: "",
-    size: "20px",
-    color: "#222",
-  }
-}
 function stackedHistogram(options){
-  var settings;
   
-  if(arguments.length == 1)
-    settings= merge(DEFAULTS, options)
-  else 
-    settings = DEFAULTS
+  var DEFAULTS = {
+      margin: {
+        top: 10, 
+        right:10, 
+        bottom:25, 
+        left: 25,
+      }, 
+      height: 300,
+      width: 400, 
+      color: ["#031D44", "#255C99", "#718B8C", "#E77245", "#596F62"],
+      legend: {
+        height: 60,
+        width: 50,
+      },
+      title: {
+        graphTitle: "",
+        size: "20px",
+        color: "#222",
+      }
+  }
 
-  var height = settings.dimensions.height;
-  var width = settings.dimensions.width;
- 
-  var margin = settings.margin
+  options = merge.recursive(true, {}, DEFAULTS, options || {});
+
+  var height = options.height,
+      width = options.width,
+      margin = options.margin,
+      x = options.xValue,
+      y = options.yValue,
+      type = options.typeValue;
 
   var chart = function chart(selection){
+    
     selection.each(function(data){
+        var yMax = 0,
+            list = [];
+        for (var i = 0; i < data.length; i++){
+            if(list.indexOf(chart.type()(data[i])) == -1)
+              list.push(chart.type()(data[i]))
+            if (chart.y()(data[i]) > yMax)
+              yMax = chart.y()(data[i])
+          };
+        
+        data.sort(function(a, b) {
+          return chart.y()(b) - chart.y()(a);
+        })
 
-    var currMax = 0
-    var yMax = 0;
-    var list = [];
-    for(var i = 0; i < data.length; i++){
-      if(list.indexOf(data[i].type) == -1)
-        list.push(data[i].type)
-      if(data[i].y > yMax)
-        yMax = data[i].y
-    }
-    data.sort(function(a, b){
-      return b.y - a.y;
-    })
-    var xScale = d3.scale.ordinal()
-      .domain(d3.range(data.length/list.length))
-      .rangeRoundBands([margin.left, width - margin.left-margin.right], .05);
+        var xScale = d3.scale.ordinal()
+            .domain(d3.range(data.length/2))
+            .rangeRoundBands([margin.left, width - margin.left-margin.right], .05);
     
 
-    var yScale = d3.scale.linear()
-      .domain([0, yMax + 5])
-      .range([height- margin.top-margin.bottom, margin.bottom]);
+        var yScale = d3.scale.linear()
+            .domain([0, yMax + 5])
+            .range([height- margin.top-margin.bottom, margin.bottom]);
 
-    var svg = d3.select(this).selectAll("svg").data([data]).enter().append("svg")
-    svg.attr("width", width).attr("height", height)
-
-    var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
+        var svg = d3.select(this)
+            .selectAll("svg")
+            .data([data])
+            .enter()
+            .append("svg");
     
+        svg.attr("width", width)
+           .attr("height", height)
 
-    group.append("g").attr("class", "x axis")
-    group.append("g").attr("class", "y axis")
-    group.append("g").attr("class", "rects")
-    group.append("g").attr("class", "legend")
-    group.append("g").attr("class", "title")
+        var group = svg.append("g").attr("transform", "translate(" + [margin.left, margin.top] + ")")
+        group.append("g").attr("class", "x axis")
+        group.append("g").attr("class", "y axis")
+        group.append("g").attr("class", "rects")
+        group.append("g").attr("class", "legend")
+        group.append("g").attr("class", "title")
    
-    svg.attr("width", width).attr("height", height);
+        svg.attr("width", width)
+            .attr("height", height);
 
-    var g = svg.selectAll("g")
+        var g = svg.selectAll("g")
 
-   
-    var graph = g.select(".rects")
-        graph.append("g").attr("class", "bars")
-        graph.select(".bars").selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-        .attr("x", function(d){ 
-          return xScale(d.x)})
-        .attr("y", function(d){ 
-          return yScale(d.y)})
-        .attr("height", function(d){ 
-          return height - margin.top - margin.bottom - yScale(d.y)})
-        .attr("width", xScale.rangeBand())
-        .attr("fill", function(d){
-          for(var i = 0; i < list.length; i++){
-            if(d.type == list[i]) 
-              return settings.colors.color[i]
-          }})
+        var graph = g.select(".rects")
+            graph.append("g").attr("class", "bars")
+            graph.select(".bars").selectAll("rect")
+            .data(function(d) {return d; })
+            .enter()
+            .append("rect")
+            .attr("x", function(d){ 
+                return xScale(chart.x()(d))})
+            .attr("y", function(d){ 
+                return yScale(chart.y()(d))})
+            .attr("height", function(d){ 
+                return height - margin.top - margin.bottom - yScale(chart.y()(d))})
+            .attr("width", xScale.rangeBand())
+            .attr("fill", function(d){
+                for(var i = 0; i < list.length; i++){
+                  if(chart.type()(d) == list[i]){
+                    return options.color[i]
+                  }
+                }
+                });
         
 
-    var legend = g.select(".legend")
-    legend.selectAll("rect").data(list)
-        .enter()
-        .append("rect")
-        .attr("width", 15)
-        .attr("height", 15)
-        .attr("x", width - margin.right - settings.legend.width-20)
-        .attr("y", function(d, i){
-           return margin.top + i*17})
-        .attr("fill", function(d, i){ 
-          return settings.colors.color[i]})
-    legend.selectAll("text").data(list)
-        .enter()
-        .append("text")
-        .text(function(d){
-          return d})
-        .attr("x", width - margin.right - settings.legend.width)
-        .attr("y", function(d, i){
-          return margin.top + i*15 + 10})
-        .attr("font-size", "11px")
-        .attr("fill", "#222")
+        var legend = g.select(".legend")
+        legend.selectAll("rect").data(list)
+            .enter()
+            .append("rect")
+            .attr({
+              width: 15,
+              height: 15,
+              x: width - margin.right - options.legend.width-20,
+              y: function(d, i) { return margin.top + i*17},
+              fill: function(d, i) { return options.color[i]}
+            });
+        
+        legend.selectAll("text")
+            .data(list)
+            .enter()
+            .append("text")
+            .text(function(d){
+                return d})
+            .attr({
+              x: width - margin.right - options.legend.width,
+              y: function(d, i){ return margin.top + i*15 + 10},
+              "font-size": "11px",
+              "fill": "#222"
+            });
 
 
-    var title = g.select(".title")
-    title.selectAll("text")
-        .data([settings.title.graphTitle])
-        .enter()
-        .append("text")
-        .text(settings.title.graphTitle)
-        .attr("x", (width)/2)
-        .attr("y", margin.top)
-        .attr("font-size", settings.title.size)
-        .attr("fill", settings.title.color)
-        .attr("text-anchor", "middle")
+        var title = g.select(".title")
+        title.selectAll("text")
+            .data([options.title.graphTitle])
+            .enter()
+            .append("text")
+            .text(options.title.graphTitle)
+            .attr({
+              x: width/2,
+              y: margin.top,
+              "font-size": options.title.size,
+              "fill": options.title.color,
+              "text-anchor": "middle"
+            });
  
+        xAxis = d3.svg.axis()
+        xAxis.scale(xScale)
+            .orient("bottom")
+            .ticks(5);
+        yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("left")
+            .ticks(5);
 
-
-    
-  xAxis = d3.svg.axis()
-  xAxis.scale(xScale)
-      .orient("bottom")
-      .ticks(5);
-  yAxis = d3.svg.axis()
-      .scale(yScale)
-      .orient("left")
-      .ticks(5);
-
-  g.select(".x.axis")
-      .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
-      .call(xAxis)
-  g.select(".y.axis")
-      .attr("transform", "translate("+ margin.left + ", 0)")
-      .call(yAxis);
-      })
+        g.select(".x.axis")
+            .attr("transform", "translate(" +[0, height - margin.top-margin.bottom] + ")")
+            .call(xAxis)
+        g.select(".y.axis")
+            .attr("transform", "translate("+ margin.left + ", 0)")
+            .call(yAxis);
+      });
 
 }
   
   
   chart.width = function(value){
-    if(!arguments.length) return width;
-    width = value;
-    return chart
-  }
+      if (!arguments.length) return width;
+      width = value;
+      return chart
+  };
 
   chart.height = function(value){
-    if(!arguments.length) return height
+      if (!arguments.length) return height;
       height = value;
       return chart;
-  }
+  };
 
   chart.margin = function(value){
-    if(!arguments.length) return margin
-    margin = value
-  }
+      if (!arguments.length) return margin;
+      margin = value
+      return chart;
+  };
+
+  chart.x = function(getter) {
+      if (!arguments.length) return x;
+      x = getter;
+      return chart;
+    };
+
+  chart.y = function(getter) {
+      if (!arguments.length) return y;
+      y = getter;
+      return chart;
+    };
+
+  chart.type = function(getter) {
+      if (!arguments.length) return type;
+      type = getter;
+      return chart;
+  };
+
   return chart;
 }
 
-function merge(defaults, options){
-  if(!options.margin)
-    options.margin = defaults.margin
-  if(!options.dimensions){
-    options.dimensions = defaults.dimensions
-  }
-  if(!options.colors)
-    options.colors = defaults.colors
-  if(!options.title)
-    options.title= defaults.title;
-  if(!options.legend)
-    options.legend = defaults.legend
-  return options
-  
-}
-module.exports = stackedHistogram;
-},{"d3":1}]},{},[4]);
+
+
+},{"d3":1,"merge":2}]},{},[5]);

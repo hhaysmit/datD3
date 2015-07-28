@@ -15,5 +15,8 @@
     "grunt-contrib-nodeunit": "^0.4.1",
     "grunt-contrib-uglify": "^0.9.1",
     "grunt-contrib-watch": "^0.6.1"
+  },
+  "dependencies": {
+    "merge": "^1.2.0"
   }
 }
